@@ -1,0 +1,154 @@
+C# and JavaScript Sample (From an MVC view)
+
+The following code was developed to allow for the editing of markdown files used to manage the frontmatter of content in an image slideshow 
+(alt text, image file paths, etc.). This is a piece of a greater CMS, which has been developed over the last year at ISU. This is one of the main
+components on which I have worked as a developer on the poject.  
+
+<div ng-show="ui.lockStatus == 'owner'">
+
+                @for (var i = 0; i < Model.Editables.Count; i++)
+                {
+
+                    <h3><b>Editable Section: </b>@Model.Editables[i].Name</h3> //Displays the name of an editable section
+
+
+                    <div class="md-header">
+
+                        @{int countFm = 0; } <!--Counter for editable FrontMatter-->
+
+
+
+                        @foreach (cas_jekyll_cms.Models.FrontMatterVariable variable in @Model.Editables[i].FrontMatter)
+                        {
+
+                            if (variable.Name.ToLower().Contains("editable")) //Displays frontmatter if the aformentioned frontmatter contains 'editable' in the name
+                            {
+
+                                <script>var containsEditableFM = true</script>
+
+                                //List of numbers that is cross-checked with the 'countsFm' variable.
+                                //If a number in this list is also contained in countsFm, a new frontMatter edit box is created
+                                var counts = new List<int> { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+
+                                foreach (int number in counts)
+                                {
+
+                                    if (number == countFm)
+                                    {
+
+                                        <div>
+                                            <br />
+                                            <p>@variable.Name :</p>
+                                            <textarea ng-show="true" id="frontMatterEditBox">@variable.Value</textarea>
+                                        </div>
+                                    }
+
+                                }
+                                countFm++;
+                            }
+                            else
+                            {
+
+                                <script>var containsEditableFM = false</script>
+                                <div style="display:none;">
+                                    @variable.Name : @variable.Value
+                                </div>
+
+                            }
+
+                        }
+
+                        <!--TestArea for simpleMDE-->
+                        <textarea ng-show="false" id="@Model.Editables[i].Name">@Model.Editables[i].Content.Trim()</textarea>
+
+                    </div>
+
+                    <script>
+
+                        if(containsEditableFM){
+                            
+			//The following is only needed if there is both editable frontMatter and a simpleMDE object
+                            $(document).ready(function () {
+
+                                //FM
+                                document.getElementById("frontMatterEditBox").onchange = function(){
+                                    var fmChange = document.getElementById("frontMatterEditBox")
+                                    var page = JSON.parse($("#json").text());
+                                    page.Editables.Content = fmChange.value;
+                                    $("#json").text(JSON.stringify(page));
+
+                                    //simpleMDE
+                                    $(document).ready(function () {
+                                        var simplemde = new SimpleMDE({
+                                            element: $("#@Model.Editables[i].Name")[0],
+                                            toolbar: ["bold", "italic", "link", "|",
+                                                {
+                                                    name: "media-upload",
+                                                    action: function customFunction(editor) {
+                                                        $('#modal-media-upload').modal();
+                                                    },
+                                                    className: "fa fa-arrow-up",
+                                                    title: "Media Upload",
+                                                },
+                                                {
+                                                    name: "media-gallery",
+                                                    action: function customFunction(editor) {
+                                                        angular.element(document.getElementById('ngapp')).scope().editorElement = editor;
+                                                        angular.element(document.getElementById('ngapp')).scope().getMediaGallery(function () {
+                                                            $('#modal-media-gallery').modal();
+                                                        });
+                                                    },
+                                                    className: "fa fa-image",
+                                                    title: "Media Gallery",
+                                                },
+                                                "|", "heading-2", "heading-3", "|", "preview", "guide"],
+                                            promptURLs: true
+                                        });
+
+                                        simplemde.codemirror.on("change", function () {
+                                            var page = JSON.parse($("#json").text());
+                                            page.Editables[@i].Content = simplemde.value();
+                                            $("#json").text(JSON.stringify(page));
+                                        });
+                                    })
+                                }
+                            })
+
+                        }else{
+                            // This is used if there is just a simpleMDE
+                            $(document).ready(function () {
+                                var simplemde = new SimpleMDE({
+                                    element: $("#@Model.Editables[i].Name")[0],
+                                    toolbar: ["bold", "italic", "link", "|",
+                                        {
+                                            name: "media-upload",
+                                            action: function customFunction(editor) {
+                                                $('#modal-media-upload').modal();
+                                            },
+                                            className: "fa fa-arrow-up",
+                                            title: "Media Upload",
+                                        },
+                                        {
+                                            name: "media-gallery",
+                                            action: function customFunction(editor) {
+                                                angular.element(document.getElementById('ngapp')).scope().editorElement = editor;
+                                                angular.element(document.getElementById('ngapp')).scope().getMediaGallery(function () {
+                                                    $('#modal-media-gallery').modal();
+                                                });
+                                            },
+                                            className: "fa fa-image",
+                                            title: "Media Gallery",
+                                        },
+                                        "|", "heading-2", "heading-3", "|", "preview", "guide"],
+                                    promptURLs: true
+                                });
+
+                                simplemde.codemirror.on("change", function () {
+                                    var page = JSON.parse($("#json").text());
+                                    page.Editables[@i].Content = simplemde.value();
+                                    $("#json").text(JSON.stringify(page));
+                                });
+                            })
+                        }
+
+                    </script>
