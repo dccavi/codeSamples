@@ -1,8 +1,8 @@
 C# and JavaScript Sample (From an MVC view)
 
-The following code was developed to allow for the editing of markdown files used to manage the frontmatter of content in an image slideshow 
-(alt text, image file paths, etc.). This is a piece of a greater CMS, which has been developed over the last year at ISU. This is one of the main
-components on which I have worked as a developer on the poject.  
+The following code was developed to allow for the editing of markdown files used to manage the frontmatter of content in an image slideshow (alt text, image file paths, etc.). This is a piece of a greater CMS, which has been developed over the last year at ISU. This is one of the main components on which I have worked as a developer on the poject. 
+
+This piece of code uses C# and Javascript, as well as HTML and CSS to drive the user interface.
 
 <div ng-show="ui.lockStatus == 'owner'">
 
@@ -21,7 +21,7 @@ components on which I have worked as a developer on the poject.
                         @foreach (cas_jekyll_cms.Models.FrontMatterVariable variable in @Model.Editables[i].FrontMatter)
                         {
 
-                            if (variable.Name.ToLower().Contains("editable")) //Displays frontmatter if the aformentioned frontmatter contains 'editable' in the name
+                            if (variable.Name.ToLower().Contains("editable")) //Displays frontmatter if the aformentioned frontmatter 					contains 'editable' in the name
                             {
 
                                 <script>var containsEditableFM = true</script>
@@ -94,7 +94,7 @@ components on which I have worked as a developer on the poject.
                                                     name: "media-gallery",
                                                     action: function customFunction(editor) {
                                                         angular.element(document.getElementById('ngapp')).scope().editorElement = editor;
-                                                        angular.element(document.getElementById('ngapp')).scope().getMediaGallery(function () {
+                                                        																angular.element(document.getElementById('ngapp')).scope().getMediaGallery(function () {
                                                             $('#modal-media-gallery').modal();
                                                         });
                                                     },
